@@ -1,25 +1,25 @@
-from fabric.api import run
+from fabric.api import sudo
 
 
 def start(service):
-    run('service start %s' % service)
+    sudo('service %s start' % service)
 
 
 def stop(service):
-    run('service stop %s' % service)
+    sudo('service %s stop' % service)
 
 
 def restart(service):
-    run('service restart %s' % service)
+    sudo('service %s restart' % service)
 
 
 def reload(service):
-    run('service reload %s' % service)
+    sudo('service %s reload' % service)
 
 
 def status(service):
-    run('service status %s' % service)
+    sudo('service %s status' % service)
 
 
 def enable(service):
-    run('chkconfig %s on' % service)
+    sudo('chkconfig %s on' % service)
