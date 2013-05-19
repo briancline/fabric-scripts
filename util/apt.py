@@ -1,31 +1,41 @@
-from fabric.api import run
+from fabric.api import sudo
+from fabric.contrib import files
+from patchwork.environment import has_binary
+
+
+env_vars = 'DEBIAN_FRONTEND=noninteractive'
+apt_command = '%s apt-get' % env_vars
 
 
 def configure():
-    run('dpkg --configure -a')
+    sudo('%s dpkg --configure -a' % env_vars)
 
 
-def add_repo(url):
-    run('add-apt-repository -y %s' % url)
+def add_repo(source, sources_file='/etc/apt/sources.list'):
+    if ' ' not in source and has_binary('which add-apt-repository',
+                                        runner=sudo):
+        sudo('%s add-apt-repository -y %s' % (env_vars, source))
+    else:
+        files.append(sources_file, source)
 
 
 def update():
-    run('apt-get update -y')
+    sudo('%s update -y' % apt_command)
 
 
 def upgrade():
-    run('apt-get upgrade -y')
+    sudo('%s upgrade -y' % apt_command)
 
 
 def dist_upgrade():
-    run('apt-get dist-upgrade -y')
+    sudo('%s dist-upgrade -y' % apt_command)
 
 
-def install(*kwargs):
-    packages = ' '.join(*kwargs)
-    run('apt-get install -y %s' % packages)
+def install(*args):
+    packages = ' '.join(args)
+    sudo('%s install -y %s' % (apt_command, packages))
 
 
-def remove(*kwargs):
-    packages = ' '.join(*kwargs)
-    run('apt-get remove -y %s' % packages)
+def remove(*args):
+    packages = ' '.join(args)
+    sudo('%s remove -y %s' % (apt_command, packages))
