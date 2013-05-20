@@ -7,6 +7,11 @@ def install(*args):
     sudo('yum install -y %s' % packages)
 
 
+def install_group(*args):
+    for group in args:
+        sudo('yum groupinstall -y "%s"' % group)
+
+
 def remove(*args):
     packages = ' '.join(args)
     sudo('yum remove -y %s' % packages)
