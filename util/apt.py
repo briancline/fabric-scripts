@@ -11,6 +11,10 @@ def configure():
     sudo('%s dpkg --configure -a' % env_vars)
 
 
+def install_from_file(file_name):
+    sudo('%s dpkg -i %s' % (env_vars, file_name))
+
+
 def add_repo(source, sources_file='/etc/apt/sources.list'):
     if ' ' not in source and has_binary('which add-apt-repository',
                                         runner=sudo):

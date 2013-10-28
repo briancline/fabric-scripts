@@ -33,6 +33,19 @@ def status(service):
     return _service_exec(service, 'status')
 
 
-def enable(service):
-    # TODO: add debian and ubuntu commands
-    sudo('chkconfig %s on' % service)
+def enable(service, runlevels='345'):
+    if has_binary('update-rc.d', runner=sudo):
+        return sudo('update-rc.d enable %s %s' % (service, runlevels))
+    elif has_binary('chkconfig', runner=sudo):
+        return sudo('chkconfig %s on' % service)
+    else:
+        raise NotImplemented('update-rc.d nor chkconfig not found!')
+
+
+def disable(service, runlevels='345'):
+    if has_binary('update-rc.d', runner=sudo):
+        return sudo('update-rc.d disable %s %s' % (service, runlevels))
+    elif has_binary('chkconfig', runner=sudo):
+        return sudo('chkconfig %s off' % service)
+    else:
+        raise NotImplemented('update-rc.d nor chkconfig not found!')
