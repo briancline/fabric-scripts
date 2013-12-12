@@ -25,6 +25,7 @@
 from __future__ import print_function
 import os
 import re
+import time
 import datetime
 
 from fabric.api import task, settings, hide
@@ -88,7 +89,8 @@ def os_list():
 @task
 def build(name, groups=DEFAULT_GROUPS, os_type=DEFAULT_OS,
           memory=DEFAULT_MEMORY, cpus=DEFAULT_CPUS,
-          source_image=DEFAULT_SOURCE_IMAGE):
+          source_image=DEFAULT_SOURCE_IMAGE, start=False,
+          headless=False):
     groups = ['/%s' % g.strip('/')
               for g in groups.split(';')] if groups else []
 
@@ -106,6 +108,29 @@ def build(name, groups=DEFAULT_GROUPS, os_type=DEFAULT_OS,
         copy_disk_image(source_image, target_image)
 
     configure_vm_storage(vm_uuid, target_image)
+
+    if start:
+        start_vm(vm_uuid, headless)
+
+
+@task
+def destroy(vm_name):
+    stop_vm(vm_name, wait=True)
+
+    unreg_result = vbox_exec('unregistervm', vm_name, '--delete')
+    if unreg_result.return_code != 0:
+        raise RuntimeError(unreg_result.stderr)
+
+
+def vm_off(vm_uuid):
+    return 'poweroff' == vm_state(vm_uuid)
+
+
+def vm_state(vm_uuid):
+    state = None
+    with settings(warn_only=True):
+        state = vm_info(vm_uuid, 'vmstate')
+    return state
 
 
 def vm_info(vm_uuid, key_name):
@@ -128,6 +153,27 @@ def vm_info(vm_uuid, key_name):
 def vm_base_path(vm_uuid):
     config_path = vm_info(vm_uuid, 'cfgfile')
     return os.path.dirname(os.path.abspath(config_path))
+
+
+@task
+def start_vm(vm_uuid, headless=False):
+    headless_param = '--type headless' if headless else ''
+
+    log('Starting VM...', color=blue, bold=True)
+    start_result = vbox_exec('startvm', vm_uuid, headless_param)
+    if start_result.return_code != 0:
+        raise RuntimeError(start_result.stderr)
+
+
+@task
+def stop_vm(vm_uuid, wait=True):
+    log('Stopping VM...', color=blue, bold=True)
+    with settings(warn_only=True):
+        vbox_exec('controlvm', vm_uuid, 'poweroff')
+
+    while not vm_off(vm_uuid):
+        log('Waiting for VM to stop...', color=blue, bold=True)
+        time.sleep(1)
 
 
 def create_vm(name, groups, os_type):
