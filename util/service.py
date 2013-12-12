@@ -39,7 +39,7 @@ def enable(service, runlevels='345'):
     elif has_binary('chkconfig', runner=sudo):
         return sudo('chkconfig %s on' % service)
     else:
-        raise NotImplemented('update-rc.d nor chkconfig not found!')
+        raise NotImplementedError('update-rc.d nor chkconfig not found!')
 
 
 def disable(service, runlevels='345'):
@@ -48,4 +48,4 @@ def disable(service, runlevels='345'):
     elif has_binary('chkconfig', runner=sudo):
         return sudo('chkconfig %s off' % service)
     else:
-        raise NotImplemented('update-rc.d nor chkconfig not found!')
+        raise NotImplementedError('update-rc.d nor chkconfig not found!')

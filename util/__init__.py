@@ -39,10 +39,10 @@ def file_update(file_name, prefix, text, use_sudo=False, uncomment=True):
         files.append(file_name, text, use_sudo=use_sudo)
 
 
-def sysctl(setting, value=None, reload=True):
+def sysctl(setting, value=None, do_reload=True):
     seek = '%s\s*=' % setting
     option = '%s=%s' % (setting, value)
     file_update('/etc/sysctl.conf', seek, option, use_sudo=True)
 
-    if reload:
+    if do_reload:
         sudo('sysctl -p')

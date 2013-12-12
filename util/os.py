@@ -2,7 +2,7 @@ import re
 from fabric.api import run
 
 
-def parse_version_file(filename, text):
+def parse_version_file(text):
     return {'name': re.findall('(\w+)_version')[0],
             'version': text.strip()}
 
@@ -18,13 +18,13 @@ def parse_var_file(text):
     return lines
 
 
-def parse_lsb_file(filename, text):
+def parse_lsb_file(text):
     lines = parse_var_file(text)
     return {'name': lines['DISTRIB_ID'],
             'version': lines['DISTRIB_RELEASE']}
 
 
-def parse_os_file(filename, text):
+def parse_os_file(text):
     lines = parse_var_file(text)
     return {'name': lines['ID'],
             'version': lines['VERSION_ID'].strip('"')}
@@ -42,7 +42,7 @@ def dist_info():
             output = run('cat %s' % filename)
             info = parser(filename, output)
             break
-        except:
+        except Exception:
             pass
 
     return info
