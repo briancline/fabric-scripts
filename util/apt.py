@@ -5,6 +5,7 @@ from patchwork.environment import has_binary
 
 env_vars = 'DEBIAN_FRONTEND=noninteractive'
 apt_command = '%s apt-get' % env_vars
+apt_args = '-q -y'
 
 
 def configure():
@@ -24,22 +25,22 @@ def add_repo(source, sources_file='/etc/apt/sources.list'):
 
 
 def update():
-    sudo('%s update -y' % apt_command)
+    sudo('%s update %s' % (apt_command, apt_args))
 
 
 def upgrade():
-    sudo('%s upgrade -y' % apt_command)
+    sudo('%s upgrade %s' % (apt_command, apt_args))
 
 
 def dist_upgrade():
-    sudo('%s dist-upgrade -y' % apt_command)
+    sudo('%s dist-upgrade %s' % (apt_command, apt_args))
 
 
 def install(*args):
     packages = ' '.join(args)
-    sudo('%s install -y %s' % (apt_command, packages))
+    sudo('%s install %s %s' % (apt_command, apt_args, packages))
 
 
 def remove(*args):
     packages = ' '.join(args)
-    sudo('%s remove -y %s' % (apt_command, packages))
+    sudo('%s remove %s %s' % (apt_command, apt_args, packages))
