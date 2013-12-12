@@ -1,4 +1,4 @@
-from fabric.api import sudo
+from fabric.api import sudo, settings
 from fabric.contrib import files
 from patchwork.environment import has_binary
 
@@ -16,12 +16,44 @@ def install_from_file(file_name):
     sudo('%s dpkg -i %s' % (env_vars, file_name))
 
 
-def add_repo(source, sources_file='/etc/apt/sources.list'):
-    if ' ' not in source and has_binary('which add-apt-repository',
-                                        runner=sudo):
-        sudo('%s add-apt-repository -y %s' % (env_vars, source))
-    else:
-        files.append(sources_file, source)
+def add_key_url(url):
+    sudo('curl -sS %s | apt-key add -' % url)
+
+
+def add_repo(url, name=None, source_packages=False, remove=False):
+    repo_type = 'deb' if not source_packages else 'deb-src'
+    sources_file = '/etc/apt/sources.list'
+
+    if not name:
+        sources_file = '/etc/apt/sources.list.d/%s.list' % name
+
+    if ' ' not in url and has_binary('which add-apt-repository', runner=sudo):
+        add_args = ' '.join(['-s' if source_packages else '',
+                             '-r' if remove else ''])
+        sudo('%s add-apt-repository -y %s "%s"' % (env_vars, add_args, url))
+    elif not remove:
+        sources_line = '%s %s' % (repo_type, url)
+        files.append(sources_file, sources_line)
+
+    if remove:
+        sources_line = '%s %s' % (repo_type, url)
+        with settings(warn_only=True):
+            grep_result = sudo("grep -rn '%s' "
+                               "/etc/apt/sources.list "
+                               "/etc/apt/sources.list.d/*.list"
+                               % sources_line)
+
+            if grep_result.return_code == 0:
+                for grep_output_line in grep_result.split('\n'):
+                    grep_params = grep_output_line.split(':', 3)[0:2]
+                    file_name = grep_params[0]
+                    line_num = grep_params[1]
+                    sudo("sed -i '%sd' %s" % (line_num, file_name))
+
+
+def remove_repo(url, name=None, source_packages=False):
+    return add_repo(url, name=name, source_packages=source_packages,
+                    remove=True)
 
 
 def update():
