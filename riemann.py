@@ -11,8 +11,6 @@ from os.path import basename
 from lxml import etree
 from distutils.version import StrictVersion
 
-env.hosts = ['riemann']
-env.user = 'root'
 env.use_ssh_config = True
 
 CLOJARS_GROUP = 'riemann'
