@@ -4,12 +4,12 @@ import sys
 import re
 import requests
 
-from fabric.api import env, sudo, task
-from fabric.colors import blue, green, red
-from util import apt
 from os.path import basename
-from lxml import etree
 from distutils.version import StrictVersion
+from fabric.api import env, sudo, task
+from fabric.colors import green, red
+from util import apt
+from lxml import etree
 
 env.use_ssh_config = True
 
@@ -28,14 +28,15 @@ def install():
         print(red('Cannot determine latest version. Exiting.'))
         sys.exit(1)
 
+    print(green('Latest version is %s' % latest_ver))
     packages = package_urls(latest_ver)
     deb_url = packages.get('debian')
     file_name = basename(deb_url)
 
-    print(blue('Downloading %s...' % file_name))
+    print('Downloading %s...' % file_name)
     sudo('curl -sO %s' % deb_url)
 
-    print(blue('Installing...'))
+    print('Installing...')
     apt.install_from_file(file_name)
     sudo('rm -f %s' % file_name)
 
@@ -46,7 +47,7 @@ def latest_version():
     latest = None
 
     try:
-        print(blue('Determining latest version from clojars...'))
+        print('Determining latest version from clojars...')
         xml = requests.get(xml_url).text
 
         xml_root = etree.XML(xml.encode('UTF-8'))
@@ -54,11 +55,8 @@ def latest_version():
                     for node in xml_root.findall(ARTIFACT_XPATH_VER)
                     if re.match(ARTIFACT_VER_REGEX, node.text)]
 
-        #versions.sort(key=lambda s: map(int, s.split('.')))
         versions.sort(key=StrictVersion)
-
         latest = versions[-1]
-        print(green('Latest version is %s' % latest))
     except Exception as e:
         print(red('Exception: %s' % e))
 
@@ -66,10 +64,10 @@ def latest_version():
 
 
 def package_urls(version):
-    deb_format = '%s_%s_all.deb' % (CLOJARS_ARTIFACT, version)
-    rpm_format = '%s-%s-1.noarch.rpm' % (CLOJARS_ARTIFACT, version)
-    tarball_format = '%s-%s.tar.bz2' % (CLOJARS_ARTIFACT, version)
+    deb_name = '%s_%s_all.deb' % (CLOJARS_ARTIFACT, version)
+    rpm_name = '%s-%s-1.noarch.rpm' % (CLOJARS_ARTIFACT, version)
+    tarball_name = '%s-%s.tar.bz2' % (CLOJARS_ARTIFACT, version)
 
-    return {'debian': '%s/%s' % (BASE_PACKAGE_URL, deb_format),
-            'redhat': '%s/%s' % (BASE_PACKAGE_URL, rpm_format),
-            'other':  '%s/%s' % (BASE_PACKAGE_URL, tarball_format)}
+    return {'debian': '%s/%s' % (BASE_PACKAGE_URL, deb_name),
+            'redhat': '%s/%s' % (BASE_PACKAGE_URL, rpm_name),
+            'other':  '%s/%s' % (BASE_PACKAGE_URL, tarball_name)}
