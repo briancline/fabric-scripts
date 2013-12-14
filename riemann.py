@@ -9,7 +9,7 @@ from distutils.version import StrictVersion
 from fabric.api import env, sudo, task
 from fabric.colors import green, red
 from util import apt
-from lxml import etree
+from xml.etree import ElementTree
 
 env.use_ssh_config = True
 
@@ -50,7 +50,7 @@ def latest_version():
         print('Determining latest version from clojars...')
         xml = requests.get(xml_url).text
 
-        xml_root = etree.XML(xml.encode('UTF-8'))
+        xml_root = ElementTree.fromstring(xml)
         versions = [node.text
                     for node in xml_root.findall(ARTIFACT_XPATH_VER)
                     if re.match(ARTIFACT_VER_REGEX, node.text)]
