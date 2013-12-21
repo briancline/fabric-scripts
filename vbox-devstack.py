@@ -171,7 +171,7 @@ def stop_vm(vm_uuid, wait=True):
     with settings(warn_only=True):
         vbox_exec('controlvm', vm_uuid, 'poweroff')
 
-    while not vm_off(vm_uuid):
+    while wait and not vm_off(vm_uuid):
         log('Waiting for VM to stop...', color=blue, bold=True)
         time.sleep(1)
 

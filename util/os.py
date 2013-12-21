@@ -3,7 +3,7 @@ from fabric.api import run
 
 
 def parse_version_file(text):
-    return {'name': re.findall('(\w+)_version')[0],
+    return {'name': re.findall('(\w+)_version', text)[0],
             'version': text.strip()}
 
 
