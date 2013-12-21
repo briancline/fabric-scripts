@@ -1,3 +1,5 @@
+#!/usr/bin/env fab -f
+
 from fabric.api import run, sudo, task, warn_only
 from fabric.contrib import files
 from util import yum, service, ConfigFile, file_update, sysctl

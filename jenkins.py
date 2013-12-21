@@ -1,3 +1,5 @@
+#!/usr/bin/env fab -f
+
 from __future__ import print_function
 from fabric.api import run, sudo, task, put, warn_only
 from util import apt

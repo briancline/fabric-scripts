@@ -1,3 +1,5 @@
+#!/usr/bin/env fab -f
+
 from __future__ import print_function
 from fabric.api import env, run, sudo, task, warn_only, settings, get, put
 from fabric.colors import green, blue
