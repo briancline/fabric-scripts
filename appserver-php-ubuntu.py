@@ -3,10 +3,27 @@
 from fabric.api import run, sudo, task, warn_only
 from fabric.contrib import files
 from util import apt, service, ConfigFile, sysctl
+from util import keys
 
 
 @task
-def server_install():
+def push_key():
+    keys.push_key()
+
+
+@task
+def bootstrap():
+    keys.push_key()
+    server_setup()
+    php_setup()
+    mysql_setup()
+    memcache_setup()
+    redis_setup()
+    nginx_setup()
+
+
+@task
+def server_setup():
     # Set kernel options
     with warn_only():
         sysctl('vm.swappiness', 0)
@@ -27,6 +44,9 @@ def server_install():
         service.start('ntp')
         service.enable('ntp')
 
+
+@task
+def php_setup():
     # Install PHP, PHP modules
     apt.install('php5-cli', 'php5-fpm', 'php5-common', 'php5-intl',
                 'php5-mcrypt', 'php5-gd', 'php5-curl', 'php5-memcached',
