@@ -3,13 +3,15 @@
 from fabric.api import run, sudo, task, warn_only
 from fabric.contrib import files
 from util import yum, service, ConfigFile, file_update, sysctl
-from util import keys  # NOQA
+from util import keys
 
 
 REPO_RPMS = {
-    'sysfm': 'http://rpm.sys.fm/centos/6/noarch/sysfm-release-6-1.el6.noarch.rpm',
+    'sysfm': ('http://rpm.sys.fm/centos/6/noarch/'
+              'sysfm-release-6-1.el6.noarch.rpm'),
     'remi':  'http://rpms.famillecollet.com/enterprise/remi-release-6.rpm',
-    'nginx': 'http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm',
+    'nginx': ('http://nginx.org/packages/centos/6/noarch/RPMS/'
+              'nginx-release-centos-6-0.el6.ngx.noarch.rpm'),
 }
 
 
@@ -113,7 +115,8 @@ def mysql_setup():
     # Run the same queries performed by mysql_secure_installation
     queries = [
         "DELETE FROM mysql.user WHERE User='';",
-        "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');",
+        "DELETE FROM mysql.user WHERE User='root' "
+        "AND Host NOT IN ('localhost', '127.0.0.1', '::1');",
         "DROP DATABASE test;",
         "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';",
         "FLUSH PRIVILEGES;",
