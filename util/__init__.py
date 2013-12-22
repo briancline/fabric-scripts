@@ -12,7 +12,7 @@ class ConfigFile(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, a, b, c):
+    def __exit__(self, exception_type, exception_value, traceback):
         pass
 
     def sed(self, pattern, replace=None):
@@ -28,9 +28,9 @@ class ConfigFile(object):
 
 def file_update(file_name, prefix, text, use_sudo=False, uncomment=True):
     if uncomment:
-        prefix = '^[#;]?\s*%s' % prefix
+        prefix = r'^[#;]?\s*%s' % prefix
     else:
-        prefix = '^%s' % prefix
+        prefix = r'^%s' % prefix
 
     if files.contains(file_name, prefix, escape=False):
         prefix = '%s.*$' % prefix
@@ -40,7 +40,7 @@ def file_update(file_name, prefix, text, use_sudo=False, uncomment=True):
 
 
 def sysctl(setting, value=None, do_reload=True):
-    seek = '%s\s*=' % setting
+    seek = r'%s\s*=' % setting
     option = '%s=%s' % (setting, value)
     file_update('/etc/sysctl.conf', seek, option, use_sudo=True)
 

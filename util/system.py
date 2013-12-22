@@ -2,8 +2,9 @@ import re
 from fabric.api import run
 
 
-def parse_version_file(text):
-    return {'name': re.findall('(\w+)_version', text)[0],
+def parse_version_file(text, filename=None):
+    name = re.findall(r'(\w+)_version', filename)[0] if filename else None
+    return {'name': name,
             'version': text.strip()}
 
 
