@@ -25,7 +25,7 @@ def restart(service):
     return _service_exec(service, 'restart')
 
 
-def reload(service):  # NOQA
+def reload_config(service):
     return _service_exec(service, 'reload')
 
 
