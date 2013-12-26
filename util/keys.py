@@ -1,11 +1,11 @@
 from os.path import exists, expanduser
-from fabric.api import run, task, warn_only
+from fabric.api import run, warn_only
 from fabric.colors import red
 from fabric.contrib import files
 
 
-@task
-def push_key(custom_key=None, user_name=''):
+def push_key(custom_key=None, user_name=None):
+    user_name = '' if user_name is None else user_name
     key_names = ['id_dsa.pub',
                  'id_rsa.pub']
 
@@ -31,3 +31,4 @@ def push_key(custom_key=None, user_name=''):
         #       Fix should be available in 1.6.1 or 1.7.0, whichever is next.
         home_dir = '/home/%s' % user_name if user_name else '$HOME'
         files.append('%s/.ssh/authorized_keys' % home_dir, key, partial=True)
+        run('chown -R %s.%s ~%s/.ssh' % (user_name, user_name, user_name))
