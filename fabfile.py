@@ -1,13 +1,22 @@
 #!/usr/bin/env fab -f
 
 from __future__ import print_function
-from fabric.api import run, sudo, task, warn_only
+from fabric.api import run, sudo, task, warn_only, env
 from fabric.context_managers import cd
 from fabric.contrib import files
 from util import apt, sysctl
 from util import keys
 
 DOTFILES_REPO = 'https://github.com/briancline/dotfiles.git'
+
+env.use_ssh_config = True
+
+
+@task
+def info():
+    run('uptime')
+    run('uname -a')
+    run('lsb_release -i -d -r -c')
 
 
 @task
@@ -27,6 +36,7 @@ def adduser(user='bc', keyfile=None, shell='/bin/bash'):
 @task
 def setup_env(user='bc'):
     apt.install('zsh', 'git')
+    run('rm -rf .env')
     run('git clone %s .env' % DOTFILES_REPO)
     with cd('.env'):
         run('./install.sh')
