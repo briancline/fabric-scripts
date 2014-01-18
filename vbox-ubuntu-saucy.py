@@ -1,26 +1,4 @@
 #!/usr/bin/env fab -f
-# The MIT License (MIT)
-#
-# Copyright (c) 2013 Brian Cline
-# Copyright (c) 2013 SoftLayer Technologies
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
 
 from __future__ import print_function
 import os
@@ -35,15 +13,14 @@ from prettytable import PrettyTable
 
 
 EXT_SSH_PORT = 20222
-NAT_NET_CIDR = '172.16.2/24'
+NAT_NET_CIDR = '172.16.4/24'
 NAT_EXT_IFACE = 'en0'
 
 DEFAULT_GROUPS = []
 DEFAULT_MEMORY = 2048
 DEFAULT_CPUS = 2
 DEFAULT_OS = 'Ubuntu_64'
-DEFAULT_GROUPS = 'OpenStack'
-DEFAULT_SOURCE_IMAGE = '/SSD/Images/test-u1204.vdi'
+DEFAULT_SOURCE_IMAGE = '/SSD/Images/test-u1310.vdi'
 
 UUID4_REGEX = '([0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})'
 
@@ -172,7 +149,7 @@ def stop_vm(vm_uuid, wait=True):
     with settings(warn_only=True):
         vbox_exec('controlvm', vm_uuid, 'poweroff')
 
-    while wait and not vm_off(vm_uuid):
+    while not vm_off(vm_uuid):
         log('Waiting for VM to stop...', color=blue, bold=True)
         time.sleep(1)
 
