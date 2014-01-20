@@ -53,8 +53,8 @@ CLUSTERS = {
 
                 'hotswap_os': 1,
                 'hotswap_slots': 4,
-                'hotswap_free': 1,
-                'hotswap_sizes_gb': [932, 2795, 2795, None],
+                'hotswap_free': 0,
+                'hotswap_sizes_gb': [932, 2795, 2795, 2795],
                 'internal_sizes_gb': [],
             },
             'heap02': {
