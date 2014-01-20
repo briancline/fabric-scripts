@@ -139,7 +139,10 @@ CLUSTERS = {
                          'fs.data.lvm-split.ext4',
                          'migrate.data'],
 
-                'fqdn': 'file02.ads1.sysnw.net',
+                'fqdn': 'hal.ads1.sysnw.net',
+                # br01.ads1.sysnw.net
+                # ge0-1.br01.ads1.sysnw.net
+                # ge2-1.br01.ads1.sysnw.net
                 'os': ['CentOS', 'CentOS release 6.4 (Final)',
                        '6.4', 'Final'],
                 'kernel': ['Linux', '2.6.32-358.6.1.el6.x86_64',
@@ -267,7 +270,7 @@ env.roledefs = {
 
 
 @task
-@parallel(len(env.hosts))
+@parallel(len(env.hosts) + 1)
 def uptime():
     run('uptime')
 
@@ -276,7 +279,7 @@ def uptime():
 @roles('local')
 def capacity():
     total_gb = hotswap_storage_capacity(CLUSTERS, DC)
-    total_tb = total_gb / 1024
+    total_tb = total_gb / 1024.0
     print(green('Capacity: %8.2f GB' % total_gb))
     print(green('          %8.2f TB' % total_tb))
 
