@@ -10,7 +10,7 @@ Manages Ceph cluster in ADS1 (Addison)
 
 from __future__ import print_function
 import fabric
-from fabric.api import env, task, roles, parallel, run
+from fabric.api import env, task, roles, parallel, runs_once, run
 from fabric.colors import green, blue  # red, yellow,
 from fabric.contrib.files import append
 from os.path import expanduser
@@ -265,6 +265,7 @@ env.roledefs = {
     'mon': hosts_in_dc_by_role(CLUSTERS, DC, 'mon'),
     'mds': hosts_in_dc_by_role(CLUSTERS, DC, 'mds'),
     'osd': hosts_in_dc_by_role(CLUSTERS, DC, 'osd'),
+    'ceph': hosts_in_dc_by_tag(CLUSTERS, DC, 'ceph'),
     'local': []
 }
 
@@ -276,12 +277,17 @@ def uptime():
 
 
 @task
-@roles('local')
+@roles('ceph')
+def df():
+    run("df -h $(mount | awk '/ceph-/ { print $1 }')")
+
+
+@task
+@runs_once
 def capacity():
     total_gb = hotswap_storage_capacity(CLUSTERS, DC)
     total_tb = total_gb / 1024.0
-    print(green('Capacity: %8.2f GB' % total_gb))
-    print(green('          %8.2f TB' % total_tb))
+    print(green('Capacity: %8.2f TB' % total_tb))
 
 
 @task
@@ -306,6 +312,7 @@ def create_user():
 
 
 @task
+@runs_once
 def create_pool(name):
     # TODO
     print(blue('Ideal PG size: %d' % _ceph_ideal_pg_size()))
